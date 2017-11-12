@@ -15,9 +15,9 @@ const countMineAround = (f, x, y) => {
    f[x-1][y+1],f[x][y+1],f[x+1][y+1]].filter(cell => cell === 9).length
 }
 
-// # easy：9×9 board with 10mines
-// # normal：16×16 board with 40mines
-// # advanced：30×16 board with 99mines
+// # easy：9×9 board with 10 parrots
+// # normal：16×16 board with 40 parrots
+// # advanced：30×16 board with 99 parrots
 
 // initialize game with click of button
 // TODO: add timer
@@ -26,8 +26,6 @@ easyButton.addEventListener("click", (e) => {
   e.preventDefault()
   field = initializeMineSweeperField(9, 10)
   let [fieldLen, mineNum] = [9, 10]
-  console.log(fieldLen)
-  console.log(mineNum)
   tds = initializeBoard(fieldLen, mineNum)
 });
 
@@ -77,9 +75,12 @@ const initializeBoard = (fieldLen, mineNum) => {
     const cellCol = +cell.dataset.col
     openCell(field, cell, cellRow, cellCol)
   }
-  // TODO: disable rightclick for opened cell
+
   function rightClickHandler(e) {
     const cell = e.target
+    // if cell is already opened, do nothing
+    if (cell.classList.contains("opened")) { return }
+    // toggle class -> flag, question, none
     if (cell.classList.contains("flagged")) {
       cell.classList.toggle("flagged")
       cell.classList.toggle("question")
@@ -103,10 +104,7 @@ const initializeBoard = (fieldLen, mineNum) => {
         if (countMineAround(f, x, y) === 0) {
           aroundPos.forEach((pos, i) => {
             // fetch HTML element with aroundCell
-            // console.log(`tr:nth-child(${x+pos[0]})`, `td:nth-child(${y+pos[1]})`)
             const aroundCell = board.querySelector(`tr:nth-child(${x+pos[0]})>td:nth-child(${y+pos[1]})`)
-            // console.log(field, aroundCell, x+pos[0], y+pos[1])
-            // debugger
             // when aroundCell is not null and not opened, open that cell too
             if(aroundCell !== null && aroundCell.classList.contains("unopened")) {openCell(field, aroundCell, +x+pos[0], +y+pos[1])}
           })
@@ -156,7 +154,7 @@ const initializeBoard = (fieldLen, mineNum) => {
       setTimeout(() => alert("you win."), 300)
     }
   }
-  // when clicked cell with mine, all cell to be unclickable(freeze)
+  // when clicked cell with mine, remove event listener from all cells(freeze)
   function freezeField(tds) { 
     tds.forEach((td) => td.removeEventListener("click", leftClickHandler))
   }

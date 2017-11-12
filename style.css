@@ -81,10 +81,9 @@ td.mine-neighbour-8 {
 /* Positioning minesweeper table and make sure the cells are square */
 #minesweeper {
   margin: auto;
-  margin-top: 3em;
+  margin-top: 5em;
   border: 1px solid #999;
   border-collapse: collapse;
-  height: 75vh;
 }
 
 #minesweeper>tbody>tr>td {
