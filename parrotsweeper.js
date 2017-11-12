@@ -172,44 +172,41 @@ const initializeBoard = (fieldLen, mineNum) => {
   }
 }
 
+// generate map(array of array filled with "W" and with padding)
+// padding is to avoid edge case(corner, edge) when count mines
+const generateMap = (num) => [...Array(num).keys()].map(i => Array(num).fill("W"))
+
+const plantMine = (field, fieldLen, mineNum) => {
+  for (let mines = 0; mines < mineNum; mines++) {
+    // row 1 -> 9, col 1 -> 9
+    let flag = true
+    while (flag) {
+      const randRow = Math.floor(Math.random() * fieldLen) + 1
+      const randCol = Math.floor(Math.random() * fieldLen) + 1
+      if (field[randRow][randCol] !== 9) {
+        field[randRow][randCol] = 9
+        flag = false
+      }
+    }
+  }
+  return field
+}
+
+// count number of boms around each cell and set the number to cell
+const fieldWithMineCount = (field, fieldLen) => {
+  for (let i = 1; i <= fieldLen; i++) {
+    for (let j = 1; j <= fieldLen; j++) {
+      if (field[i][j] !== 9) { 
+        field[i][j] = countMineAround(field, i, j)
+      }
+    }
+  }
+  return field
+}
+
 const initializeMineSweeperField = (fieldLen, mineNum) => {
-  let field = fieldWithMineCount(plantMine(generateMap(fieldLen + 2), fieldLen, mineNum), fieldLen)
+  const field = fieldWithMineCount(plantMine(generateMap(fieldLen + 2), fieldLen, mineNum), fieldLen)
   console.log(field)
   console.log(field, fieldLen, mineNum)
   return field
-
-  // generate map(array of array filled with "W" and with padding)
-  // padding is to avoid edge case(corner, edge) when count mines
-  function generateMap(num) {
-    return [...Array(num).keys()].map(i => Array(num).fill("W"))
-  }
-
-  function plantMine(field, fieldLen, mineNum) {
-    for (let mines = 0; mines < mineNum; mines++) {
-      // row 1 -> 9, col 1 -> 9
-      let flag = true
-      while (flag) {
-        const randRow = Math.floor(Math.random() * fieldLen) + 1
-        const randCol = Math.floor(Math.random() * fieldLen) + 1
-        if (field[randRow][randCol] !== 9) {
-          field[randRow][randCol] = 9
-          flag = false
-        }
-      }
-    }
-    return field
-  }
-  // count number of boms around each cell and set the number to cell
-  function fieldWithMineCount(field, fieldLen) {
-    // console.log(field)
-    for (let i = 1; i <= fieldLen; i++) {
-      for (let j = 1; j <= fieldLen; j++) {
-        if (field[i][j] !== 9) {
-          // console.log(field[i][j])
-          field[i][j] = countMineAround(field, i, j)
-        }
-      }
-    }
-    return field
-  }
 }
