@@ -35,6 +35,7 @@ PARTY OR DIE
 Resources
 -----------
 + https://picnicss.com/
++ https://toddmotto.com/avoiding-anonymous-javascript-functions/
 
 
 

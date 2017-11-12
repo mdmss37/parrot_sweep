@@ -49,44 +49,44 @@ td.flagged {
 td.question {
   background: url('images/question.svg');
 }
-td.mine {
-  /*background: url('images/mine.png');*/
+td.parrot {
+  /*background: url('images/parrot.png');*/
   background: url('images/dealwithitparrot.gif');
 }
-td.mine-neighbour-1 {
+td.parrot-neighbour-1 {
   background: url('images/1.svg');
 }
-td.mine-neighbour-2 {
+td.parrot-neighbour-2 {
   background: url('images/2.svg');
 }
-td.mine-neighbour-3 {
+td.parrot-neighbour-3 {
   background: url('images/3.svg');
 }
-td.mine-neighbour-4 {
+td.parrot-neighbour-4 {
   background: url('images/4.svg');
 }
-td.mine-neighbour-5 {
+td.parrot-neighbour-5 {
   background: url('images/5.svg');
 }
-td.mine-neighbour-6 {
+td.parrot-neighbour-6 {
   background: url('images/6.svg');
 }
-td.mine-neighbour-7 {
+td.parrot-neighbour-7 {
   background: url('images/7.svg');
 }
-td.mine-neighbour-8 {
+td.parrot-neighbour-8 {
   background: url('images/8.svg');
 }
 
 /* Positioning minesweeper table and make sure the cells are square */
-#minesweeper {
+#parrot_sweeper {
   margin: auto;
   margin-top: 5em;
   border: 1px solid #999;
   border-collapse: collapse;
 }
 
-#minesweeper>tbody>tr>td {
+#parrot_sweeper>tbody>tr>td {
   width: 16px;
   height: 16px;
   background-size: cover;

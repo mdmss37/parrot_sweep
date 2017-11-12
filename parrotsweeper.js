@@ -1,16 +1,82 @@
 
-// TODO: refactor code to be more maintanable
 
-// global variables you can access from anywhere
-let field, tds, fieldLen, mineNum;
-const board = document.querySelector("#minesweeper>tbody")
-const aroundPos = [[-1,-1],[0,-1],[+1,-1],[-1,0],[+1,0],[-1,+1],[0,+1],[+1,+1]];
+// TODO: avoid global variables
+// let field, tds, fieldLen, mineNum;
+
+function game() {
+  
+}
+
+const board = document.querySelector("#parrot_sweeper>tbody")
+const aroundPos = [[-1,-1],[0,-1],[+1,-1],[-1,0],[+1,0],[-1,+1],[0,+1],[+1,+1]]
+
+const difficulty = {
+  easy: {
+    fieldLen: 9,
+    parrotNum: 10,
+  },
+  intermediate: {
+    fieldLen: 16,
+    parrotNum: 40,
+  },
+  hard: {
+    fieldLen: 25,
+    parrotNum: 99,
+  },
+}
+
+class Field {
+  constructor(fieldLen, parrotNum) {
+    this.fieldLen = fieldLen
+    this.parrotNum = parrotNum
+    this.field = undefined
+  };
+
+  // generate map(array of array filled with "W" and with padding)
+  // padding is to avoid edge case(corner, edge) when count mines
+  generateMap (num) {
+    return [...Array(num).keys()].map(i => Array(num).fill("W"))
+  }
+
+  plantParrot (field, fieldLen, parrotNum) {
+    for (let parrots = 0; parrots < parrotNum; parrots++) {
+      let flag = true
+      while (flag) {
+        const randRow = Math.floor(Math.random() * fieldLen) + 1
+        const randCol = Math.floor(Math.random() * fieldLen) + 1
+        if (field[randRow][randCol] !== 9) {
+          field[randRow][randCol] = 9
+          flag = false
+        }
+      }
+    }
+    return field
+  }
+
+  fieldWithParrotCount (field, fieldLen) {
+    for (let i = 1; i <= fieldLen; i++) {
+      for (let j = 1; j <= fieldLen; j++) {
+        if (field[i][j] !== 9) { 
+          field[i][j] = countParrotAround(field, i, j)
+        }
+      }
+    }
+    return field
+  }
+
+  initField () {
+    const fieldLen = this.fieldLen
+    const parrotNum = this.parrotNum
+    const field = fieldWithParrotCount(plantParrot(generateMap(fieldLen + 2), fieldLen, parrotNum), fieldLen)
+    this.field = field
+  }
+}
 
 // helper to check certain cell(x, y) has how many boms
 // [x-1, y-1],[x, y-1],[x+1, y-1]
 // [x-1,   y],[x,   y],[x+1,   y]
 // [x-1, y+1],[x, y+1],[x+1, y+1]
-const countMineAround = (f, x, y) => {
+const countParrotAround = (f, x, y) => {
   return [f[x-1][y-1],f[x][y-1],f[x+1][y-1],f[x-1][y],f[x+1][y],
    f[x-1][y+1],f[x][y+1],f[x+1][y+1]].filter((cell) => cell === 9).length
 }
@@ -20,7 +86,7 @@ const tileRender = (num) => {
     const row = `<tr></tr>`
     board.insertAdjacentHTML("beforeend", row)
   }
-  const rows = document.querySelectorAll("#minesweeper>tbody>tr")
+  const rows = document.querySelectorAll("#parrot_sweeper>tbody>tr")
   rows.forEach((row, i) => {
     for (let j = 1; j <= num; j++) {
       const td = `<td class=${"unopened"} data-row=${i+1} data-col=${j}></td>`
@@ -36,11 +102,11 @@ const freezeField = (tds) => {
 
 const noContext = (e) => e.preventDefault()
 
-const leftClickHandler = (fieldLen, mineNum, e) => {
+const leftClickHandler = (field, e) => {
   const cell = e.target
   const cellRow = +cell.dataset.row
   const cellCol = +cell.dataset.col
-  openCell(field, cell, cellRow, cellCol, fieldLen, mineNum)
+  openCell(field, cell, cellRow, cellCol)
 }
 
 const rightClickHandler = (e) => {
@@ -58,25 +124,26 @@ const rightClickHandler = (e) => {
   }
 }
 
-const checkWinningCondition = (tds, fieldLen, mineNum) => {
+const checkWinningCondition = (tds, fieldLen, parrotNum) => {
   let openedCell = 0
   tds.forEach((td) => {
-    if (td.classList.contains("opened")) {openedCell++}
+    if (td.classList.contains("opened")) { openedCell++ }
   })
   console.log("number of opened cell is:", openedCell)
   console.log(fieldLen)
-  console.log(mineNum)
-  console.log("winning condition is", fieldLen * fieldLen - mineNum)
-  return openedCell === (fieldLen * fieldLen - mineNum)
+  console.log(parrotNum)
+  console.log("winning condition is", fieldLen * fieldLen - parrotNum)
+  return openedCell === (fieldLen * fieldLen - parrotNum)
 }
 
-const openCell = (f, cell, x, y, fieldLen, mineNum) => {
+const openCell = (field, cell, x, y) => {
+  console.log(field)
   cell.classList.remove("unopened")
-  switch (field[x][y]) {
+  switch (field.field[x][y]) {
     case 0:
       cell.classList.add("opened")
       // check cells around, if there are no boms, open cells around as well
-      if (countMineAround(f, x, y) === 0) {
+      if (countParrotAround(field.field, x, y) === 0) {
         aroundPos.forEach((pos, i) => {
           // fetch HTML element with aroundCell
           const aroundCell = board.querySelector(`tr:nth-child(${x+pos[0]})>td:nth-child(${y+pos[1]})`)
@@ -87,65 +154,103 @@ const openCell = (f, cell, x, y, fieldLen, mineNum) => {
       break      
     case 1:
       cell.classList.add("opened")
-      cell.classList.add("mine-neighbour-1")
+      cell.classList.add("parrot-neighbour-1")
       break
     case 2:
       cell.classList.add("opened")
-      cell.classList.add("mine-neighbour-2")
+      cell.classList.add("parrot-neighbour-2")
       break
     case 3:
       cell.classList.add("opened")
-      cell.classList.add("mine-neighbour-3")
+      cell.classList.add("parrot-neighbour-3")
       break
     case 4:
       cell.classList.add("opened")
-      cell.classList.add("mine-neighbour-4")
+      cell.classList.add("parrot-neighbour-4")
       break
     case 5:
       cell.classList.add("opened")
-      cell.classList.add("mine-neighbour-5")
+      cell.classList.add("parrot-neighbour-5")
       break
     case 6:
       cell.classList.add("opened")
-      cell.classList.add("mine-neighbour-6")
+      cell.classList.add("parrot-neighbour-6")
       break
     case 7:
       cell.classList.add("opened")
-      cell.classList.add("mine-neighbour-7")
+      cell.classList.add("parrot-neighbour-7")
       break
     case 8:
       cell.classList.add("opened")
-      cell.classList.add("mine-neighbour-8")
+      cell.classList.add("parrot-neighbour-8")
       break
     case 9:
-      cell.classList.add("mine")
+      cell.classList.add("parrot")
       freezeField(tds)
       setTimeout(() => alert("you lose."), 300)
     default:
       break
   }
-  if (checkWinningCondition(tds, fieldLen, mineNum)) {
+  if (checkWinningCondition(tds, field.fieldLen, field.parrotNum)) {
     freezeField(tds)
     setTimeout(() => alert("you win."), 300)
   }
 }
 
-const initGame = (fieldLen, mineNum) => {
-  document.querySelector("#minesweeper>tbody").innerHTML = ""
+const clearBoard = () => document.querySelector("#parrot_sweeper>tbody").innerHTML = ""
+
+const initGame = (fieldLen, parrotNum) => {
+  clearBoard()
   tileRender(fieldLen)
-  const tds = document.querySelectorAll("#minesweeper>tbody>tr>td")
+  const field = new Field(fieldLen, parrotNum)
+  field.initField()
+  const tds = document.querySelectorAll("#parrot_sweeper>tbody>tr>td")
   tds.forEach(td => td.addEventListener("contextmenu", noContext))
   tds.forEach(td => td.addEventListener("contextmenu", rightClickHandler))
-  tds.forEach(td => td.addEventListener("click", leftClickHandler.bind(null, fieldLen, mineNum)))
+  tds.forEach(td => td.addEventListener("click", leftClickHandler.bind(null, field)))
   return tds
 }
+
+// # easy：9×9 board with 10 parrots
+// # normal：16×16 board with 40 parrots
+// # advanced：30×16 board with 99 parrots
+
+// initialize game with click of button
+// TODO: add timer
+const easyButton = document.querySelector("#easy")
+easyButton.addEventListener("click", (e) => {
+  e.preventDefault()
+  field = new Field(9, 10)
+  field.initField()
+  let [fieldLen, parrotNum] = [9, 10]
+  tds = initGame(fieldLen, parrotNum)
+});
+
+const intermediateButton = document.querySelector("#intermediate")
+intermediateButton.addEventListener("click", (e) => {
+  e.preventDefault()
+  field = new Field(16, 40)
+  field.initField()
+  let [fieldLen, parrotNum] = [16, 40]
+  tds = initGame(fieldLen, parrotNum)
+});
+
+const hardButton = document.querySelector("#hard")
+hardButton.addEventListener("click", (e) => {
+  e.preventDefault()
+  field = new Field(25, 99)
+  field.initField()
+  let [fieldLen, parrotNum] = [25, 99]
+  tds = initGame(fieldLen, parrotNum)
+});
+
 
 // generate map(array of array filled with "W" and with padding)
 // padding is to avoid edge case(corner, edge) when count mines
 const generateMap = (num) => [...Array(num).keys()].map(i => Array(num).fill("W"))
 
-const plantMine = (field, fieldLen, mineNum) => {
-  for (let mines = 0; mines < mineNum; mines++) {
+const plantParrot = (field, fieldLen, parrotNum) => {
+  for (let parrots = 0; parrots < parrotNum; parrots++) {
     let flag = true
     while (flag) {
       const randRow = Math.floor(Math.random() * fieldLen) + 1
@@ -160,50 +265,20 @@ const plantMine = (field, fieldLen, mineNum) => {
 }
 
 // count number of boms around each cell and set the number to cell
-const fieldWithMineCount = (field, fieldLen) => {
+const fieldWithParrotCount = (field, fieldLen) => {
   for (let i = 1; i <= fieldLen; i++) {
     for (let j = 1; j <= fieldLen; j++) {
       if (field[i][j] !== 9) { 
-        field[i][j] = countMineAround(field, i, j)
+        field[i][j] = countParrotAround(field, i, j)
       }
     }
   }
   return field
 }
 
-const initializeMineSweeperField = (fieldLen, mineNum) => {
-  const field = fieldWithMineCount(plantMine(generateMap(fieldLen + 2), fieldLen, mineNum), fieldLen)
-  console.log(field)
-  console.log(field, fieldLen, mineNum)
+const initField = (fieldLen, parrotNum) => {
+  const field = fieldWithParrotCount(plantParrot(generateMap(fieldLen + 2), fieldLen, parrotNum), fieldLen)
   return field
 }
 
-// # easy：9×9 board with 10 parrots
-// # normal：16×16 board with 40 parrots
-// # advanced：30×16 board with 99 parrots
 
-// initialize game with click of button
-// TODO: add timer
-const easyButton = document.querySelector("#easy")
-easyButton.addEventListener("click", (e) => {
-  e.preventDefault()
-  field = initializeMineSweeperField(9, 10)
-  let [fieldLen, mineNum] = [9, 10]
-  tds = initGame(fieldLen, mineNum)
-});
-
-const intermediateButton = document.querySelector("#intermediate")
-intermediateButton.addEventListener("click", (e) => {
-  e.preventDefault()
-  field = initializeMineSweeperField(16, 40)
-  let [fieldLen, mineNum] = [16, 40]
-  tds = initGame(fieldLen, mineNum)
-});
-
-const hardButton = document.querySelector("#hard")
-hardButton.addEventListener("click", (e) => {
-  e.preventDefault()
-  field = initializeMineSweeperField(25, 99)
-  let [fieldLen, mineNum] = [25, 99]
-  tds = initGame(fieldLen, mineNum)
-});
