@@ -12,164 +12,132 @@ const aroundPos = [[-1,-1],[0,-1],[+1,-1],[-1,0],[+1,0],[-1,+1],[0,+1],[+1,+1]];
 // [x-1, y+1],[x, y+1],[x+1, y+1]
 const countMineAround = (f, x, y) => {
   return [f[x-1][y-1],f[x][y-1],f[x+1][y-1],f[x-1][y],f[x+1][y],
-   f[x-1][y+1],f[x][y+1],f[x+1][y+1]].filter(cell => cell === 9).length
+   f[x-1][y+1],f[x][y+1],f[x+1][y+1]].filter((cell) => cell === 9).length
 }
 
-// # easy：9×9 board with 10 parrots
-// # normal：16×16 board with 40 parrots
-// # advanced：30×16 board with 99 parrots
+const tileRender = (num) => {
+  for (let i = 1; i <= num; i++) {
+    const row = `<tr></tr>`
+    board.insertAdjacentHTML("beforeend", row)
+  }
+  const rows = document.querySelectorAll("#minesweeper>tbody>tr")
+  rows.forEach((row, i) => {
+    for (let j = 1; j <= num; j++) {
+      const td = `<td class=${"unopened"} data-row=${i+1} data-col=${j}></td>`
+      row.insertAdjacentHTML("beforeend", td)
+    }
+  })
+}
 
-// initialize game with click of button
-// TODO: add timer
-const easyButton = document.querySelector("#easy")
-easyButton.addEventListener("click", (e) => {
-  e.preventDefault()
-  field = initializeMineSweeperField(9, 10)
-  let [fieldLen, mineNum] = [9, 10]
-  tds = initializeBoard(fieldLen, mineNum)
-});
+// when clicked cell with mine, remove event listener from all cells(freeze)
+const freezeField = (tds) => { 
+  tds.forEach((td) => td.removeEventListener("click", leftClickHandler))
+}
 
-const intermediateButton = document.querySelector("#intermediate")
-intermediateButton.addEventListener("click", (e) => {
-  e.preventDefault()
-  field = initializeMineSweeperField(16, 40)
-  let [fieldLen, mineNum] = [16, 40]
-  tds = initializeBoard(fieldLen, mineNum)
-});
+const noContext = (e) => e.preventDefault()
 
-const hardButton = document.querySelector("#hard")
-hardButton.addEventListener("click", (e) => {
-  e.preventDefault()
-  field = initializeMineSweeperField(25, 99)
-  let [fieldLen, mineNum] = [25, 99]
-  tds = initializeBoard(fieldLen, mineNum)
-});
+const leftClickHandler = (fieldLen, mineNum, e) => {
+  const cell = e.target
+  const cellRow = +cell.dataset.row
+  const cellCol = +cell.dataset.col
+  openCell(field, cell, cellRow, cellCol, fieldLen, mineNum)
+}
 
-const initializeBoard = (fieldLen, mineNum) => {
+const rightClickHandler = (e) => {
+  const cell = e.target
+  // if cell is already opened, do nothing
+  if (cell.classList.contains("opened")) { return }
+  // toggle class -> flag, question, none
+  if (cell.classList.contains("flagged")) {
+    cell.classList.toggle("flagged")
+    cell.classList.toggle("question")
+  } else if (cell.classList.contains("question")) {
+    cell.classList.toggle("question")
+  } else {
+    cell.classList.toggle("flagged")
+  }
+}
+
+const checkWinningCondition = (tds, fieldLen, mineNum) => {
+  let openedCell = 0
+  tds.forEach((td) => {
+    if (td.classList.contains("opened")) {openedCell++}
+  })
+  console.log("number of opened cell is:", openedCell)
+  console.log(fieldLen)
+  console.log(mineNum)
+  console.log("winning condition is", fieldLen * fieldLen - mineNum)
+  return openedCell === (fieldLen * fieldLen - mineNum)
+}
+
+const openCell = (f, cell, x, y, fieldLen, mineNum) => {
+  cell.classList.remove("unopened")
+  switch (field[x][y]) {
+    case 0:
+      cell.classList.add("opened")
+      // check cells around, if there are no boms, open cells around as well
+      if (countMineAround(f, x, y) === 0) {
+        aroundPos.forEach((pos, i) => {
+          // fetch HTML element with aroundCell
+          const aroundCell = board.querySelector(`tr:nth-child(${x+pos[0]})>td:nth-child(${y+pos[1]})`)
+          // when aroundCell is not null and not opened, open that cell too
+          if(aroundCell !== null && aroundCell.classList.contains("unopened")) {openCell(field, aroundCell, +x+pos[0], +y+pos[1])}
+        })
+      } 
+      break      
+    case 1:
+      cell.classList.add("opened")
+      cell.classList.add("mine-neighbour-1")
+      break
+    case 2:
+      cell.classList.add("opened")
+      cell.classList.add("mine-neighbour-2")
+      break
+    case 3:
+      cell.classList.add("opened")
+      cell.classList.add("mine-neighbour-3")
+      break
+    case 4:
+      cell.classList.add("opened")
+      cell.classList.add("mine-neighbour-4")
+      break
+    case 5:
+      cell.classList.add("opened")
+      cell.classList.add("mine-neighbour-5")
+      break
+    case 6:
+      cell.classList.add("opened")
+      cell.classList.add("mine-neighbour-6")
+      break
+    case 7:
+      cell.classList.add("opened")
+      cell.classList.add("mine-neighbour-7")
+      break
+    case 8:
+      cell.classList.add("opened")
+      cell.classList.add("mine-neighbour-8")
+      break
+    case 9:
+      cell.classList.add("mine")
+      freezeField(tds)
+      setTimeout(() => alert("you lose."), 300)
+    default:
+      break
+  }
+  if (checkWinningCondition(tds, fieldLen, mineNum)) {
+    freezeField(tds)
+    setTimeout(() => alert("you win."), 300)
+  }
+}
+
+const initGame = (fieldLen, mineNum) => {
   document.querySelector("#minesweeper>tbody").innerHTML = ""
   tileRender(fieldLen)
-
   const tds = document.querySelectorAll("#minesweeper>tbody>tr>td")
   tds.forEach(td => td.addEventListener("contextmenu", noContext))
   tds.forEach(td => td.addEventListener("contextmenu", rightClickHandler))
-  tds.forEach(td => td.addEventListener("click", leftClickHandler))
+  tds.forEach(td => td.addEventListener("click", leftClickHandler.bind(null, fieldLen, mineNum)))
   return tds
-
-  function tileRender(num) {
-    for (let i = 1; i <= num; i++) {
-      const row = `<tr></tr>`
-      board.insertAdjacentHTML("beforeend", row)
-    }
-    const rows = document.querySelectorAll("#minesweeper>tbody>tr")
-    rows.forEach((row, i) => {
-      for (let j = 1; j <= num; j++) {
-        const td = `<td class=${"unopened"} data-row=${i+1} data-col=${j}></td>`
-        row.insertAdjacentHTML("beforeend", td)
-      }
-    })
-  }
-
-  function leftClickHandler(e) {
-    const cell = e.target
-    const cellRow = +cell.dataset.row
-    const cellCol = +cell.dataset.col
-    openCell(field, cell, cellRow, cellCol)
-  }
-
-  function rightClickHandler(e) {
-    const cell = e.target
-    // if cell is already opened, do nothing
-    if (cell.classList.contains("opened")) { return }
-    // toggle class -> flag, question, none
-    if (cell.classList.contains("flagged")) {
-      cell.classList.toggle("flagged")
-      cell.classList.toggle("question")
-    } else if (cell.classList.contains("question")) {
-      cell.classList.toggle("question")
-    } else {
-      cell.classList.toggle("flagged")
-    }
-  }
-
-  function noContext(e) { 
-    e.preventDefault() 
-  }
-
-  function openCell (f, cell, x, y) {
-    cell.classList.remove("unopened")
-    switch (field[x][y]) {
-      case 0:
-        cell.classList.add("opened")
-        // check cells around, if there are no boms, open cells around as well
-        if (countMineAround(f, x, y) === 0) {
-          aroundPos.forEach((pos, i) => {
-            // fetch HTML element with aroundCell
-            const aroundCell = board.querySelector(`tr:nth-child(${x+pos[0]})>td:nth-child(${y+pos[1]})`)
-            // when aroundCell is not null and not opened, open that cell too
-            if(aroundCell !== null && aroundCell.classList.contains("unopened")) {openCell(field, aroundCell, +x+pos[0], +y+pos[1])}
-          })
-        } 
-        break      
-      case 1:
-        cell.classList.add("opened")
-        cell.classList.add("mine-neighbour-1")
-        break
-      case 2:
-        cell.classList.add("opened")
-        cell.classList.add("mine-neighbour-2")
-        break
-      case 3:
-        cell.classList.add("opened")
-        cell.classList.add("mine-neighbour-3")
-        break
-      case 4:
-        cell.classList.add("opened")
-        cell.classList.add("mine-neighbour-4")
-        break
-      case 5:
-        cell.classList.add("opened")
-        cell.classList.add("mine-neighbour-5")
-        break
-      case 6:
-        cell.classList.add("opened")
-        cell.classList.add("mine-neighbour-6")
-        break
-      case 7:
-        cell.classList.add("opened")
-        cell.classList.add("mine-neighbour-7")
-        break
-      case 8:
-        cell.classList.add("opened")
-        cell.classList.add("mine-neighbour-8")
-        break
-      case 9:
-        cell.classList.add("mine")
-        freezeField(tds)
-        setTimeout(() => alert("you lose."), 300)
-      default:
-        break
-    }
-    if (checkWinningCondition(tds, fieldLen, mineNum)) {
-      freezeField(tds)
-      setTimeout(() => alert("you win."), 300)
-    }
-  }
-  // when clicked cell with mine, remove event listener from all cells(freeze)
-  function freezeField(tds) { 
-    tds.forEach((td) => td.removeEventListener("click", leftClickHandler))
-  }
-
-  function checkWinningCondition(tds, fieldLen, mineNum) {
-    let openedCell = 0
-    tds.forEach((td) => {
-      if (td.classList.contains("opened")) {openedCell++}
-    })
-    console.log("number of opened cell is:", openedCell)
-    console.log(fieldLen)
-    console.log(mineNum)
-    console.log("winning condition is", fieldLen * fieldLen - mineNum)
-    return openedCell === (fieldLen * fieldLen - mineNum)
-  }
 }
 
 // generate map(array of array filled with "W" and with padding)
@@ -178,7 +146,6 @@ const generateMap = (num) => [...Array(num).keys()].map(i => Array(num).fill("W"
 
 const plantMine = (field, fieldLen, mineNum) => {
   for (let mines = 0; mines < mineNum; mines++) {
-    // row 1 -> 9, col 1 -> 9
     let flag = true
     while (flag) {
       const randRow = Math.floor(Math.random() * fieldLen) + 1
@@ -210,3 +177,33 @@ const initializeMineSweeperField = (fieldLen, mineNum) => {
   console.log(field, fieldLen, mineNum)
   return field
 }
+
+// # easy：9×9 board with 10 parrots
+// # normal：16×16 board with 40 parrots
+// # advanced：30×16 board with 99 parrots
+
+// initialize game with click of button
+// TODO: add timer
+const easyButton = document.querySelector("#easy")
+easyButton.addEventListener("click", (e) => {
+  e.preventDefault()
+  field = initializeMineSweeperField(9, 10)
+  let [fieldLen, mineNum] = [9, 10]
+  tds = initGame(fieldLen, mineNum)
+});
+
+const intermediateButton = document.querySelector("#intermediate")
+intermediateButton.addEventListener("click", (e) => {
+  e.preventDefault()
+  field = initializeMineSweeperField(16, 40)
+  let [fieldLen, mineNum] = [16, 40]
+  tds = initGame(fieldLen, mineNum)
+});
+
+const hardButton = document.querySelector("#hard")
+hardButton.addEventListener("click", (e) => {
+  e.preventDefault()
+  field = initializeMineSweeperField(25, 99)
+  let [fieldLen, mineNum] = [25, 99]
+  tds = initGame(fieldLen, mineNum)
+});
