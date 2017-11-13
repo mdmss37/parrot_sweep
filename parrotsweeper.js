@@ -1,12 +1,9 @@
 
 
 // TODO: avoid global variables
-function game() {
+function parrotSweep() {
   
 }
-
-let lose = false
-let win = false
 
 const board = document.querySelector("#parrot_sweeper>tbody")
 const aroundPos = [[-1,-1],[0,-1],[+1,-1],[-1,0],[+1,0],[-1,+1],[0,+1],[+1,+1]]
@@ -25,6 +22,16 @@ const difficulty = {
     parrotNum: 99,
   },
 }
+
+// helper to check certain cell(x, y) has how many parrots
+// [x-1, y-1],[x, y-1],[x+1, y-1]
+// [x-1,   y],[x,   y],[x+1,   y]
+// [x-1, y+1],[x, y+1],[x+1, y+1]
+const countParrotAround = (f, x, y) => {
+  return [f[x-1][y-1],f[x][y-1],f[x+1][y-1],f[x-1][y],f[x+1][y],
+   f[x-1][y+1],f[x][y+1],f[x+1][y+1]].filter((cell) => cell === 9).length
+}
+
 
 class Game {
   constructor() {
@@ -60,10 +67,9 @@ class Game {
     this.tileRender(fieldLen)
     const field = new Field(fieldLen, parrotNum)
     field.initField()
-    // const tds = document.querySelectorAll("#parrot_sweeper>tbody>tr>td")
     field.tds.forEach(td => td.addEventListener("contextmenu", noContext))
     field.tds.forEach(td => td.addEventListener("contextmenu", rightClickHandler))
-    field.tds.forEach(td => td.addEventListener("click", leftClickHandler.bind(null, field)))
+    field.tds.forEach(td => td.addEventListener("click", leftClickHandler.bind(null, field, this.status)))
   }
 }
 
@@ -119,44 +125,15 @@ class Field {
   }
 }
 
-// helper to check certain cell(x, y) has how many parrots
-// [x-1, y-1],[x, y-1],[x+1, y-1]
-// [x-1,   y],[x,   y],[x+1,   y]
-// [x-1, y+1],[x, y+1],[x+1, y+1]
-const countParrotAround = (f, x, y) => {
-  return [f[x-1][y-1],f[x][y-1],f[x+1][y-1],f[x-1][y],f[x+1][y],
-   f[x-1][y+1],f[x][y+1],f[x+1][y+1]].filter((cell) => cell === 9).length
-}
-
-const tileRender = (num, size = "large") => {
-  const tdSize = `td-${size}`
-  const tdClass = `unopened ${tdSize}`
-  for (let i = 1; i <= num; i++) {
-    const row = `<tr></tr>`
-    board.insertAdjacentHTML("beforeend", row)
-  }
-  const rows = document.querySelectorAll("#parrot_sweeper>tbody>tr")
-  rows.forEach((row, i) => {
-    for (let j = 1; j <= num; j++) {
-      const td = `<td class="${tdClass}" data-row=${i+1} data-col=${j}></td>`
-      row.insertAdjacentHTML("beforeend", td)
-    }
-  })
-}
-
-// when clicked cell with parrots, remove left click event listener from all cells(freeze)
-// const freezeField = (tds) => { 
-//   tds.forEach((td) => td.removeEventListener("click", leftClickHandler))
-// }
-
 const noContext = (e) => e.preventDefault()
 
-const leftClickHandler = (field, e) => {
-  if (win === true || lose === true) { return }
+const leftClickHandler = (field, status, e) => {
+  console.log(status)
+  if (status.win === true || status.lose === true) { return }
   const cell = e.target
   const cellRow = +cell.dataset.row
   const cellCol = +cell.dataset.col
-  openCell(field, cell, cellRow, cellCol)
+  openCell(field, cell, cellRow, cellCol, status)
 }
 
 const rightClickHandler = (e) => {
@@ -185,7 +162,7 @@ const checkWinningCondition = (field) => {
   return openedCell === (winningCellNum)
 }
 
-const openCell = (field, cell, x, y) => {
+const openCell = (field, cell, x, y, status) => {
   const cellValue = field.field[x][y]
   console.log(cellValue)
   cell.classList.remove("unopened")
@@ -205,28 +182,13 @@ const openCell = (field, cell, x, y) => {
     cell.classList.add(`parrot-neighbour-${cellValue}`)
   } else {
     cell.classList.add("parrot")
-    lose = true
+    status.lose = true
     setTimeout(() => alert("you lose."), 300)
   }
   if (checkWinningCondition(field)) {
-    win = true
+    status.win = true
     setTimeout(() => alert("you win."), 300)
   }
-}
-
-const clearBoard = () => board.innerHTML = ""
-
-const initGame = ({ fieldLen, parrotNum }) => {
-  win = false
-  lose = false
-  clearBoard()
-  tileRender(fieldLen)
-  const field = new Field(fieldLen, parrotNum)
-  field.initField()
-  // const tds = document.querySelectorAll("#parrot_sweeper>tbody>tr>td")
-  field.tds.forEach(td => td.addEventListener("contextmenu", noContext))
-  field.tds.forEach(td => td.addEventListener("contextmenu", rightClickHandler))
-  field.tds.forEach(td => td.addEventListener("click", leftClickHandler.bind(null, field)))
 }
 
 // # easy：9×9 board with 10 parrots
@@ -238,23 +200,20 @@ const initGame = ({ fieldLen, parrotNum }) => {
 const easyButton = document.querySelector("#easy")
 easyButton.addEventListener("click", (e) => {
   e.preventDefault()
-  field = new Field(9, 10)
-  field.initField()
-  initGame(difficulty.easy)
+  game = new Game
+  game.initGame(difficulty.easy)
 });
 
 const intermediateButton = document.querySelector("#intermediate")
 intermediateButton.addEventListener("click", (e) => {
   e.preventDefault()
-  field = new Field(16, 40)
-  field.initField()
-  initGame(difficulty.intermediate)
+  game = new Game
+  game.initGame(difficulty.intermediate)
 });
 
 const hardButton = document.querySelector("#hard")
 hardButton.addEventListener("click", (e) => {
   e.preventDefault()
-  field = new Field(25, 99)
-  field.initField()
-  initGame(difficulty.hard)
+  game = new Game
+  game.initGame(difficulty.hard)
 });
