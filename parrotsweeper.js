@@ -67,12 +67,14 @@ class Field {
   initField () {
     const fieldLen = this.fieldLen
     const parrotNum = this.parrotNum
-    const field = fieldWithParrotCount(plantParrot(generateMap(fieldLen + 2), fieldLen, parrotNum), fieldLen)
+    const map = this.generateMap(fieldLen + 2)
+    let field = this.plantParrot(map, fieldLen, parrotNum)
+    field = this.fieldWithParrotCount(field, fieldLen)
     this.field = field
   }
 }
 
-// helper to check certain cell(x, y) has how many boms
+// helper to check certain cell(x, y) has how many parrots
 // [x-1, y-1],[x, y-1],[x+1, y-1]
 // [x-1,   y],[x,   y],[x+1,   y]
 // [x-1, y+1],[x, y+1],[x+1, y+1]
@@ -137,59 +139,27 @@ const checkWinningCondition = (tds, fieldLen, parrotNum) => {
 }
 
 const openCell = (field, cell, x, y) => {
-  console.log(field)
+  const cellValue = field.field[x][y]
+  console.log(cellValue)
   cell.classList.remove("unopened")
-  switch (field.field[x][y]) {
-    case 0:
-      cell.classList.add("opened")
-      // check cells around, if there are no boms, open cells around as well
-      if (countParrotAround(field.field, x, y) === 0) {
-        aroundPos.forEach((pos, i) => {
-          // fetch HTML element with aroundCell
-          const aroundCell = board.querySelector(`tr:nth-child(${x+pos[0]})>td:nth-child(${y+pos[1]})`)
-          // when aroundCell is not null and not opened, open that cell too
-          if(aroundCell !== null && aroundCell.classList.contains("unopened")) {openCell(field, aroundCell, +x+pos[0], +y+pos[1])}
-        })
-      } 
-      break      
-    case 1:
-      cell.classList.add("opened")
-      cell.classList.add("parrot-neighbour-1")
-      break
-    case 2:
-      cell.classList.add("opened")
-      cell.classList.add("parrot-neighbour-2")
-      break
-    case 3:
-      cell.classList.add("opened")
-      cell.classList.add("parrot-neighbour-3")
-      break
-    case 4:
-      cell.classList.add("opened")
-      cell.classList.add("parrot-neighbour-4")
-      break
-    case 5:
-      cell.classList.add("opened")
-      cell.classList.add("parrot-neighbour-5")
-      break
-    case 6:
-      cell.classList.add("opened")
-      cell.classList.add("parrot-neighbour-6")
-      break
-    case 7:
-      cell.classList.add("opened")
-      cell.classList.add("parrot-neighbour-7")
-      break
-    case 8:
-      cell.classList.add("opened")
-      cell.classList.add("parrot-neighbour-8")
-      break
-    case 9:
-      cell.classList.add("parrot")
-      freezeField(tds)
-      setTimeout(() => alert("you lose."), 300)
-    default:
-      break
+  if (field.field[x][y] === 0) {
+    cell.classList.add("opened")
+    // check cells around, if there are no parrots, open cells around as well
+    if (countParrotAround(field.field, x, y) === 0) {
+      aroundPos.forEach((pos, i) => {
+      // fetch HTML element with aroundCell
+      const aroundCell = board.querySelector(`tr:nth-child(${x+pos[0]})>td:nth-child(${y+pos[1]})`)
+      // when aroundCell is not null and not opened, open that cell too
+      if(aroundCell !== null && aroundCell.classList.contains("unopened")) {openCell(field, aroundCell, +x+pos[0], +y+pos[1])}
+      })
+    }
+  } else if (field.field[x][y] <= 8) {
+    cell.classList.add("opened")
+    cell.classList.add(`parrot-neighbour-${field.field[x][y]}`)
+  } else {
+    cell.classList.add("parrot")
+    freezeField(tds)
+    setTimeout(() => alert("you lose."), 300)
   }
   if (checkWinningCondition(tds, field.fieldLen, field.parrotNum)) {
     freezeField(tds)
@@ -243,42 +213,3 @@ hardButton.addEventListener("click", (e) => {
   let [fieldLen, parrotNum] = [25, 99]
   tds = initGame(fieldLen, parrotNum)
 });
-
-
-// generate map(array of array filled with "W" and with padding)
-// padding is to avoid edge case(corner, edge) when count mines
-const generateMap = (num) => [...Array(num).keys()].map(i => Array(num).fill("W"))
-
-const plantParrot = (field, fieldLen, parrotNum) => {
-  for (let parrots = 0; parrots < parrotNum; parrots++) {
-    let flag = true
-    while (flag) {
-      const randRow = Math.floor(Math.random() * fieldLen) + 1
-      const randCol = Math.floor(Math.random() * fieldLen) + 1
-      if (field[randRow][randCol] !== 9) {
-        field[randRow][randCol] = 9
-        flag = false
-      }
-    }
-  }
-  return field
-}
-
-// count number of boms around each cell and set the number to cell
-const fieldWithParrotCount = (field, fieldLen) => {
-  for (let i = 1; i <= fieldLen; i++) {
-    for (let j = 1; j <= fieldLen; j++) {
-      if (field[i][j] !== 9) { 
-        field[i][j] = countParrotAround(field, i, j)
-      }
-    }
-  }
-  return field
-}
-
-const initField = (fieldLen, parrotNum) => {
-  const field = fieldWithParrotCount(plantParrot(generateMap(fieldLen + 2), fieldLen, parrotNum), fieldLen)
-  return field
-}
-
-
