@@ -21,22 +21,21 @@ Download all the files and open `index.html` in a modern web browser.
 To Do:
 -----------
 + Review parrots are equally distributed(add test)
-+ Organize js code
++ Organize JavaScript code
 + Add timer
 + when player loses, parrot wear sunglass
 + custom size and number for grid + parrots
 + favicon
 + Better Positioning for mine table
 
-PARTY OR DIE
------------
-[Cult of the Party Parrot](http://cultofthepartyparrot.com/)
-
 Resources
 -----------
 + https://picnicss.com/
 + https://toddmotto.com/avoiding-anonymous-javascript-functions/
 
+PARTY OR DIE
+-----------
+[Cult of the Party Parrot](http://cultofthepartyparrot.com/)
 
 
 

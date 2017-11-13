@@ -32,7 +32,6 @@ const countParrotAround = (f, x, y) => {
    f[x-1][y+1],f[x][y+1],f[x+1][y+1]].filter((cell) => cell === 9).length
 }
 
-
 class Game {
   constructor() {
     this.status = {
