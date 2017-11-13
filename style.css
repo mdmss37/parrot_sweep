@@ -91,3 +91,21 @@ td.parrot-neighbour-8 {
   height: 16px;
   background-size: cover;
 }
+
+#parrot_sweeper>tbody>tr>td.td-small {
+  width: 16px;
+  height: 16px;
+  background-size: cover;
+}
+
+#parrot_sweeper>tbody>tr>td.td-middle {
+  width: 20px;
+  height: 20px;
+  background-size: cover;
+}
+
+#parrot_sweeper>tbody>tr>td.td-large {
+  width: 24px;
+  height: 24px;
+  background-size: cover;
+}

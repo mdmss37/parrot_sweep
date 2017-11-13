@@ -5,7 +5,7 @@ Demo: http://mdmss37.github.io/parrot_sweep
 
 Motivation
 -----------
-+ Understand the basics of HTML, CSS and JavaScript
++ Understand the basics of HTML, CSS and ES6 JavaScript
 + Implement minesweeper game logic from scratch
 + Create interactive application and put on the web(github page)
 
@@ -23,10 +23,10 @@ To Do:
 + Review parrots are equally distributed(add test)
 + Organize js code
 + Add timer
-+ Better Positioning for mine table
 + when player loses, parrot wear sunglass
 + custom size and number for grid + parrots
 + favicon
++ Better Positioning for mine table
 
 PARTY OR DIE
 -----------
