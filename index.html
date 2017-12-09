@@ -8,47 +8,41 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div>
-    <nav>
-      <a href="#" class="brand">
-        <img class="logo" src="http://cultofthepartyparrot.com/assets/parrot.svg" />
-        <span>Parrot sweeper</span>
-      </a>
+  <nav>
+    <a href="#" class="brand">
+      <img class="logo" src="http://cultofthepartyparrot.com/assets/parrot.svg" />
+      <span>Parrot sweeper</span>
+    </a>
 
-      <!-- responsive-->
-      <input id="bmenub" type="checkbox" class="show">
-      <label for="bmenub" class="burger pseudo button">Difficulty</label>
+    <!-- responsive-->
+    <input id="bmenub" type="checkbox" class="show">
+    <label for="bmenub" class="burger pseudo button">Difficulty</label>
 
-      <div class="menu">
-        <span>Choose Difficulty</span>
-        <button class="success difficulty" id="easy">Easy</button>
-        <button class="warning difficulty" id="intermediate">Intermediate</button>
-        <button class="error difficulty" id="hard">Hard</button>
-      </div>
-    </nav>    
-  </div>
+    <div class="menu">
+      <span>Choose Difficulty</span>
+      <button class="success difficulty" id="easy">Easy</button>
+      <button class="warning difficulty" id="intermediate">Intermediate</button>
+      <button class="error difficulty" id="hard">Hard</button>
+    </div>
+  </nav>
 
   <div id="main">
-    <div class="card">
-      <div class="flex full center">
-        <div>
-          <table id="parrot_sweeper">
-            <tbody>  
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <footer>
-        <!-- https://stackoverflow.com/questions/27264819/how-do-i-give-a-font-awesome-icon-a-background-color -->
-        <a href="https://github.com/mdmss37">
-          <span class="fa-stack fa-lg icon-github">
-            <i class="fa fa-square fa-stack-2x"></i>
-            <i class="fa fa-github fa-stack-1x"></i>
-          </span>
-        </a>   
-      </footer>    
+    <div class="board">
+      <table id="parrot_sweeper">
+        <tbody>  
+        </tbody>
+      </table>
     </div>
+    <!-- https://stackoverflow.com/questions/27264819/how-do-i-give-a-font-awesome-icon-a-background-color -->
+    <footer>
+      <a href="https://github.com/mdmss37" class="icon-social">
+        <span class="fa-stack fa-lg icon-github">
+          <i class="fa fa-square fa-stack-2x"></i>
+          <i class="fa fa-github fa-stack-1x"></i>
+        </span>
+      </a>
+      <p>2017 mdmss37</p>
+    </footer>
   </div>
 
   <script type="text/javascript" src="parrotsweeper.js"></script>

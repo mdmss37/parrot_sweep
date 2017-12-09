@@ -32,6 +32,11 @@ Resources
 -----------
 + https://picnicss.com/
 + https://toddmotto.com/avoiding-anonymous-javascript-functions/
++ https://github.com/michaelbutler/minesweeper
++ https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Classes
++ https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Object_initializer
++ https://toddmotto.com/mastering-the-module-pattern/
++ https://toddmotto.com/everything-you-wanted-to-know-about-javascript-scope/
 
 PARTY OR DIE
 -----------

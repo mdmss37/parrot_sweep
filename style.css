@@ -1,9 +1,38 @@
+/*for CSS debug*/
+/** {
+  border: solid 1px red;
+}*/
 
 #main {
+  height: calc(100vh - 70px);
+}
+
+.board {
+  height: 100%;
+  display: flex;
+}
+
+footer {
+  height: 70px;
+  display: flex;
+}
+
+footer a,
+footer p {
+  justify-content: center;
+  align-items: center;
+}
+
+footer p {
+  vertical-align: middle;
+}
+
+.icon-social {
+  display: flex;
 }
 
 .fa-stack-1x {
-  color:white;
+  color: white;
 }
 
 .fa.fa-circle {
@@ -11,7 +40,7 @@
 }
 
 .icon-github {
-  color: #25292E;
+  color: #25292e;
 }
 
 .icon-facebook {
@@ -23,88 +52,94 @@
 }
 
 .icon-linkedin {
-  color: #0077B5;
+  color: #0077b5;
 }
 
-#footer .fa {
-  color: #788188;
+.footer {
+  height: 70px;
 }
+/*
+.footer .fa {
+  color: #788188;
+}*/
 
 /* CSS classes you can use on your table td to display the relevant tile */
 
-td, th {
+td,
+th {
   padding: 0;
 }
 
 td.unopened {
-  background: url('images/unopened.svg');
+  background: url("images/unopened.svg");
   cursor: pointer;
 }
 td.opened {
-  background: url('images/opened.svg');
+  background: url("images/opened.svg");
 }
 td.flagged {
-  background: url('images/flag.svg');
+  background: url("images/flag.svg");
 }
 td.question {
-  background: url('images/question.svg');
+  background: url("images/question.svg");
 }
 td.parrot {
   /*background: url('images/parrot.png');*/
-  background: url('images/dealwithitparrot.gif');
+  background: url("images/dealwithitparrot.gif");
 }
 td.parrot-neighbour-1 {
-  background: url('images/1.svg');
+  background: url("images/1.svg");
 }
 td.parrot-neighbour-2 {
-  background: url('images/2.svg');
+  background: url("images/2.svg");
 }
 td.parrot-neighbour-3 {
-  background: url('images/3.svg');
+  background: url("images/3.svg");
 }
 td.parrot-neighbour-4 {
-  background: url('images/4.svg');
+  background: url("images/4.svg");
 }
 td.parrot-neighbour-5 {
-  background: url('images/5.svg');
+  background: url("images/5.svg");
 }
 td.parrot-neighbour-6 {
-  background: url('images/6.svg');
+  background: url("images/6.svg");
 }
 td.parrot-neighbour-7 {
-  background: url('images/7.svg');
+  background: url("images/7.svg");
 }
 td.parrot-neighbour-8 {
-  background: url('images/8.svg');
+  background: url("images/8.svg");
 }
 
 /* Positioning minesweeper table and make sure the cells are square */
 #parrot_sweeper {
   margin: auto;
-  margin-top: 5em;
   border: 1px solid #999;
   border-collapse: collapse;
+  justify-content: center;
+  align-items: center;
 }
 
-#parrot_sweeper>tbody>tr>td {
+#parrot_sweeper > tbody > tr > td {
   width: 16px;
   height: 16px;
   background-size: cover;
 }
 
-#parrot_sweeper>tbody>tr>td.td-small {
+#parrot_sweeper > tbody > tr > td.td-small {
   width: 16px;
   height: 16px;
   background-size: cover;
 }
 
-#parrot_sweeper>tbody>tr>td.td-middle {
+#parrot_sweeper > tbody > tr > td.td-middle {
   width: 20px;
   height: 20px;
   background-size: cover;
 }
 
-#parrot_sweeper>tbody>tr>td.td-large {
+#parrot_sweeper > tbody > tr > td.td-large {
   width: 24px;
   height: 24px;
   background-size: cover;
