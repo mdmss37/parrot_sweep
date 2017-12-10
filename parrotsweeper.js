@@ -13,16 +13,19 @@ const aroundPos = [
   [+1, +1]
 ];
 
-const difficulty = {
+const levels = {
   easy: {
+    difficulty: "easy",
     fieldLen: 9,
     parrotNum: 10
   },
   intermediate: {
+    difficulty: "intermediate",
     fieldLen: 16,
     parrotNum: 40
   },
   hard: {
+    difficulty: "hard",
     fieldLen: 25,
     parrotNum: 99
   }
@@ -49,7 +52,8 @@ class Game {
   constructor() {
     this.status = {
       win: false,
-      lose: false
+      lose: false,
+      difficulty: undefined
     };
   }
 
@@ -57,8 +61,8 @@ class Game {
     board.innerHTML = "";
   }
 
-  tileRender(num, size = "large") {
-    const tdSize = `td-${size}`;
+  tileRender(num, tileSize = "large") {
+    const tdSize = `td-${tileSize}`;
     const tdClass = `unopened ${tdSize}`;
     for (let i = 1; i <= num; i++) {
       const row = `<tr></tr>`;
@@ -74,10 +78,24 @@ class Game {
     });
   }
 
-  initGame({ fieldLen, parrotNum }) {
-    this.status = { win: false, lose: false };
+  tileSize(difficulty) {
+    const tileSize = {
+      easy: "large",
+      intermediate: "middle",
+      hard: "small"
+    };
+    return tileSize[difficulty];
+  }
+
+  initGame({ fieldLen, parrotNum, difficulty }) {
+    this.status = {
+      win: false,
+      lose: false,
+      difficulty
+    };
     this.clearBoard();
-    this.tileRender(fieldLen);
+    const tileSize = this.tileSize(difficulty);
+    this.tileRender(fieldLen, tileSize);
     const field = new Field(fieldLen, parrotNum);
     field.initField();
     field.tds.forEach(td => td.addEventListener("contextmenu", noContext));
@@ -231,19 +249,24 @@ const easyButton = document.querySelector("#easy");
 easyButton.addEventListener("click", e => {
   e.preventDefault();
   game = new Game();
-  game.initGame(difficulty.easy);
+  game.initGame(levels.easy);
 });
 
 const intermediateButton = document.querySelector("#intermediate");
 intermediateButton.addEventListener("click", e => {
   e.preventDefault();
   game = new Game();
-  game.initGame(difficulty.intermediate);
+  game.initGame(levels.intermediate);
 });
 
 const hardButton = document.querySelector("#hard");
 hardButton.addEventListener("click", e => {
   e.preventDefault();
   game = new Game();
-  game.initGame(difficulty.hard);
+  game.initGame(levels.hard);
 });
+
+board.insertAdjacentHTML(
+  "beforeend",
+  `<h1>Please choose difficulty to sweep parrots</h1>`
+);

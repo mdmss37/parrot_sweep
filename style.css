@@ -5,6 +5,7 @@
 
 #main {
   height: calc(100vh - 70px);
+  padding-top: 50px;
 }
 
 .board {
@@ -128,8 +129,8 @@ td.parrot-neighbour-8 {
 }
 
 #parrot_sweeper > tbody > tr > td.td-small {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   background-size: cover;
 }
 
